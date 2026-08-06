@@ -14,18 +14,6 @@ namespace AcademicAppoinment.Models
         [MaxLength(50)]
         public string LecturerCode { get; set; } = null!;
 
-        [Required]
-        [MaxLength(150)]
-        public string FullName { get; set; } = null!;
-
-        [Required]
-        public string PasswordHash { get; set; } = null!;
-
-        [MaxLength(20)]
-        public string? PhoneNumber { get; set; }
-
-        public bool IsActive { get; set; } = true;
-
         [MaxLength(150)]
         public string? Department { get; set; }
 
@@ -50,8 +38,8 @@ namespace AcademicAppoinment.Models
         public ICollection<Appointment> Appointments { get; set; }
             = new List<Appointment>();
 
-        [JsonIgnore]
-        public ICollection<Notification> Notifications { get; set; }
-            = new List<Notification>();
+        //[JsonIgnore]
+        //public ICollection<Notification> Notifications { get; set; }
+        //    = new List<Notification>();
     }
 }
