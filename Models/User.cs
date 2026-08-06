@@ -17,6 +17,13 @@ namespace AcademicAppoinment.Models
         [MaxLength(20)]
         public string? PhoneNumber { get; set; }
 
+        [EmailAddress]
+        [Required]
+        public string EmailAddress { get; set; }
+
+        [MaxLength(50)]
+        public string FullName {  get; set; }
+
         // Khóa ngoại tới Role
         public int RoleId { get; set; }
 

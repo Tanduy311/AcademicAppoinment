@@ -94,19 +94,19 @@ namespace AcademicAppoinment.Models
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Student 1 - N Notification
-            modelBuilder.Entity<Notification>()
-                .HasOne(n => n.Student)
-                .WithMany(s => s.Notifications)
-                .HasForeignKey(n => n.StudentId)
-                .OnDelete(DeleteBehavior.Restrict);
+        // Student 1 - N Notification
+            //modelBuilder.Entity<Notification>()
+            //    .HasOne(n => n.Student)
+            //    .WithMany(s => s.Notifications)
+            //    .HasForeignKey(n => n.StudentId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
-            // Lecturer 1 - N Notification
-            modelBuilder.Entity<Notification>()
-                .HasOne(n => n.Lecturer)
-                .WithMany(l => l.Notifications)
-                .HasForeignKey(n => n.LecturerId)
-                .OnDelete(DeleteBehavior.Restrict);
+         // Lecturer 1 - N Notification
+            //modelBuilder.Entity<Notification>()
+            //    .HasOne(n => n.Lecturer)
+            //    .WithMany(l => l.Notifications)
+            //    .HasForeignKey(n => n.LecturerId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // Appointment 1 - N Notification
             modelBuilder.Entity<Notification>()
