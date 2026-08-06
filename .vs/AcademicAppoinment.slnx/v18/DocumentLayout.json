@@ -1,0 +1,92 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Anh Kiet\\Desktop\\Project\\backend\u002Bba\\Back-end\\AcademicAppoinment\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{EC2E2E78-7FF9-400B-862A-574DDD76758E}|AcademicAppoinment.csproj|c:\\users\\anh kiet\\desktop\\project\\backend\u002Bba\\back-end\\academicappoinment\\models\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EC2E2E78-7FF9-400B-862A-574DDD76758E}|AcademicAppoinment.csproj|solutionrelative:models\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EC2E2E78-7FF9-400B-862A-574DDD76758E}|AcademicAppoinment.csproj|c:\\users\\anh kiet\\desktop\\project\\backend\u002Bba\\back-end\\academicappoinment\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EC2E2E78-7FF9-400B-862A-574DDD76758E}|AcademicAppoinment.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EC2E2E78-7FF9-400B-862A-574DDD76758E}|AcademicAppoinment.csproj|c:\\users\\anh kiet\\desktop\\project\\backend\u002Bba\\back-end\\academicappoinment\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{EC2E2E78-7FF9-400B-862A-574DDD76758E}|AcademicAppoinment.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EC2E2E78-7FF9-400B-862A-574DDD76758E}|AcademicAppoinment.csproj|c:\\users\\anh kiet\\desktop\\project\\backend\u002Bba\\back-end\\academicappoinment\\models\\appoinment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EC2E2E78-7FF9-400B-862A-574DDD76758E}|AcademicAppoinment.csproj|solutionrelative:models\\appoinment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 104,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\Anh Kiet\\Desktop\\Project\\backend\u002Bba\\Back-end\\AcademicAppoinment\\Models\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "Models\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\Anh Kiet\\Desktop\\Project\\backend\u002Bba\\Back-end\\AcademicAppoinment\\Models\\AppDbContext.cs",
+              "RelativeToolTip": "Models\\AppDbContext.cs",
+              "ViewState": "AgIAAEoAAAAAAAAAAAAUwE4AAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-06T09:03:58.63Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\Anh Kiet\\Desktop\\Project\\backend\u002Bba\\Back-end\\AcademicAppoinment\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\Anh Kiet\\Desktop\\Project\\backend\u002Bba\\Back-end\\AcademicAppoinment\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-08-06T08:52:34.834Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Anh Kiet\\Desktop\\Project\\backend\u002Bba\\Back-end\\AcademicAppoinment\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\Anh Kiet\\Desktop\\Project\\backend\u002Bba\\Back-end\\AcademicAppoinment\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAADMAAAAAAAAAAAAAAEUAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-06T08:50:16.867Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Appoinment.cs",
+              "DocumentMoniker": "C:\\Users\\Anh Kiet\\Desktop\\Project\\backend\u002Bba\\Back-end\\AcademicAppoinment\\Models\\Appoinment.cs",
+              "RelativeDocumentMoniker": "Models\\Appoinment.cs",
+              "ToolTip": "C:\\Users\\Anh Kiet\\Desktop\\Project\\backend\u002Bba\\Back-end\\AcademicAppoinment\\Models\\Appoinment.cs",
+              "RelativeToolTip": "Models\\Appoinment.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-06T08:45:54.172Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
