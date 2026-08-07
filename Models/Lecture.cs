@@ -12,7 +12,7 @@ namespace AcademicAppoinment.Models
 
         [Required]
         [MaxLength(50)]
-        public string LecturerCode { get; set; } = null!;
+        public string? LecturerCode { get; set; } = null!;
 
         [MaxLength(150)]
         public string? Department { get; set; }
