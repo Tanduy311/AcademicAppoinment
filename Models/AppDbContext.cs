@@ -14,7 +14,6 @@ namespace AcademicAppoinment.Models
         public DbSet<Role> Roles { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Lecturer> Lecturers { get; set; }
-        public DbSet<Admin> Admins { get; set; }
         public DbSet<AvailabilitySlot> AvailabilitySlots { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Notification> Notifications { get; set; }
@@ -26,6 +25,11 @@ namespace AcademicAppoinment.Models
             // AccountName không được trùng
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.AccountName)
+                .IsUnique();
+
+            // EmailAddress không được trùng
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.EmailAddress)
                 .IsUnique();
 
             // StudentCode không được trùng
@@ -94,20 +98,6 @@ namespace AcademicAppoinment.Models
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-        // Student 1 - N Notification
-            //modelBuilder.Entity<Notification>()
-            //    .HasOne(n => n.Student)
-            //    .WithMany(s => s.Notifications)
-            //    .HasForeignKey(n => n.StudentId)
-            //    .OnDelete(DeleteBehavior.Restrict);
-
-         // Lecturer 1 - N Notification
-            //modelBuilder.Entity<Notification>()
-            //    .HasOne(n => n.Lecturer)
-            //    .WithMany(l => l.Notifications)
-            //    .HasForeignKey(n => n.LecturerId)
-            //    .OnDelete(DeleteBehavior.Restrict);
-
             // Appointment 1 - N Notification
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.Appointment)
@@ -135,5 +125,4 @@ namespace AcademicAppoinment.Models
             );
         }
     }
-}
 }
