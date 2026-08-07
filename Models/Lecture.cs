@@ -5,7 +5,7 @@ namespace AcademicAppoinment.Models
 {
     public class Lecturer
     {
-        public int LectureId { get; set; }
+        public int LecturerId { get; set; }
 
         // Khóa ngoại đến User
         public int UserId { get; set; }
