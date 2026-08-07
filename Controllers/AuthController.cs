@@ -23,7 +23,26 @@ namespace AcademicAppoinment.Controllers
             _configuration = configuration;
         }
 
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest login)
+        {
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.AccountName == login.AccountName);
 
+            if (user == null)
+            {
+                return BadRequest( new { message = "Invalid account name or password." });
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
+            {
+                return BadRequest(new { message = "Invalid account name or password." });
+            }
+
+            var token = GenerateJwtToken(user);
+            return Ok(new { token, message = "Login successful" });
+        }
 
         [HttpPost("StudentRegister")]
         public async Task<IActionResult> StudentRegister([FromBody] RegisterRequest register)
@@ -37,8 +56,7 @@ namespace AcademicAppoinment.Controllers
             return await ProcessRegister(register, 3); // RoleId 3 for Lecturer
         }
 
-        [HttpPost("ProcessRegister")]
-        public async Task<IActionResult> ProcessRegister(RegisterRequest register, int role)
+        private async Task<IActionResult> ProcessRegister(RegisterRequest register, int role)
 
         {
             if (!ModelState.IsValid)
@@ -46,14 +64,14 @@ namespace AcademicAppoinment.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (_context.Users.Any(u => u.AccountName == register.AccountName))
+            if (await _context.Users.AnyAsync(u => u.AccountName == register.AccountName))
             {
-                return BadRequest("Account name already exists.");
+                return BadRequest(new { message = "Account name already exists." });
             }
 
-            if (_context.Users.Any(u => u.EmailAddress == register.Email))
+            if (await _context.Users.AnyAsync(u => u.EmailAddress == register.Email))
             {
-                return BadRequest("Email address already used.");
+                return BadRequest(new { message = "Email address already used." });
             }
 
             var hashPassword = BCrypt.Net.BCrypt.HashPassword(register.Password);
@@ -66,11 +84,11 @@ namespace AcademicAppoinment.Controllers
                     AccountName = register.AccountName,
                     PasswordHash = hashPassword,
                     EmailAddress = register.Email,
-                    FullName = register.FullName,
+                    FullName = register.FullName,   
                     RoleId = role
                 };
 
-                _context.Users.Add(user);
+                await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
 
                 if (role == 2)
@@ -99,22 +117,22 @@ namespace AcademicAppoinment.Controllers
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, new{ message = "An error occurred while processing your request." });
             }
         }
 
         private string GenerateJwtToken(User user)
         {
-            var roleName = _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefault(u => u.UserId == user.UserId)?.Role?.RoleName;
+            //var roleName = _context.Users
+            //    .Include(u => u.Role)
+            //    .FirstOrDefault(u => u.UserId == user.UserId)?.Role?.RoleName;
 
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Name, user.AccountName),
                 new Claim(ClaimTypes.Email, user.EmailAddress),
-                new Claim(ClaimTypes.Role, roleName)
+                new Claim(ClaimTypes.Role, user.Role?.RoleName?? "Unknown")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
