@@ -22,7 +22,7 @@ namespace AcademicAppoinment.Models
         public string EmailAddress { get; set; }
 
         [MaxLength(50)]
-        public string FullName {  get; set; }
+        public string? FullName {  get; set; }
 
         // Khóa ngoại tới Role
         public int RoleId { get; set; }

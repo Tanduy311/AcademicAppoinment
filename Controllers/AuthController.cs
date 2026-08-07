@@ -1,5 +1,6 @@
 ﻿using AcademicAppoinment.DTOs;
 using AcademicAppoinment.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,37 @@ namespace AcademicAppoinment.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("Login")]
+        [Authorize]
+        [HttpGet("Me")]
+        public async Task<IActionResult> GetMe()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated or expired." });
+            }
+
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if(user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            return Ok(new
+            {
+                userId = user.UserId,
+                accountName = user.AccountName,
+                fullName = user.FullName,
+                emailAddress = user.EmailAddress,
+                role = user.Role.RoleName?? "Unknown"
+            });
+        }
+
+            [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest login)
         {
             var user = await _context.Users
@@ -49,6 +80,7 @@ namespace AcademicAppoinment.Controllers
         {
             return await ProcessRegister(register, 2); // RoleId 2 for Student
         }
+
 
         [HttpPost("LecturerRegister")]
         public async Task<IActionResult> LecturerRegister([FromBody] RegisterRequest register)
@@ -84,7 +116,7 @@ namespace AcademicAppoinment.Controllers
                     AccountName = register.AccountName,
                     PasswordHash = hashPassword,
                     EmailAddress = register.Email,
-                    FullName = register.FullName,   
+                    FullName = "your name",   
                     RoleId = role
                 };
 
@@ -114,7 +146,7 @@ namespace AcademicAppoinment.Controllers
 
                 return Ok(new { message = "registed successfully" });
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                 await transaction.RollbackAsync();
                 return StatusCode(500, new{ message = "An error occurred while processing your request." });
