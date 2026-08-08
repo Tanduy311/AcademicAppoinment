@@ -95,6 +95,133 @@ namespace AcademicAppoinment.Controllers
             return Ok(new { message = "Appointment cancelled" });
         }
 
+        /// <summary>
+        /// Get pending appointments for lecturer
+        /// </summary>
+        [HttpGet("/api/appointments/lecturer/pending")]
+        [Authorize(Policy = "LecturerOnly")]
+        public IActionResult GetLecturerPendingAppointments([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId)) return BadRequest("Missing or invalid user claim");
+
+            var appointments = _appointmentService.GetPendingAppointmentsForLecturer(userId, page, pageSize);
+            var result = appointments.Select(a => new
+            {
+                a.AppointmentId,
+                a.Topic,
+                a.Description,
+                a.Status,
+                a.CreatedAt,
+                Student = new { a.Student.StudentId, FullName = a.Student.User?.FullName, a.Student.StudentCode },
+                Slot = new { a.AvailabilitySlot.AvailabilitySlotId, a.AvailabilitySlot.StartTime, a.AvailabilitySlot.EndTime, a.AvailabilitySlot.MeetingType }
+            });
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Approve an appointment (lecturer only)
+        /// </summary>
+        [HttpPost("{id}/approve")]
+        [Authorize(Policy = "LecturerOnly")]
+        public IActionResult ApproveAppointment(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId)) return BadRequest("Missing or invalid user claim");
+
+            bool ok = _appointmentService.ApproveAppointment(id, userId, out var error);
+            if (!ok)
+            {
+                if (error.Contains("can only approve"))
+                {
+                    return Forbid();
+                }
+                return BadRequest(new { message = error });
+            }
+
+            return Ok(new { message = "Appointment approved" });
+        }
+
+        /// <summary>
+        /// Reject an appointment with required reason (lecturer only)
+        /// </summary>
+        [HttpPost("{id}/reject")]
+        [Authorize(Policy = "LecturerOnly")]
+        public IActionResult RejectAppointment(int id, [FromBody] RejectAppointmentRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId)) return BadRequest("Missing or invalid user claim");
+
+            bool ok = _appointmentService.RejectAppointment(id, userId, request.Reason, out var error);
+            if (!ok)
+            {
+                if (error.Contains("can only reject"))
+                {
+                    return Forbid();
+                }
+                return BadRequest(new { message = error });
+            }
+
+            return Ok(new { message = "Appointment rejected" });
+        }
+
+        /// <summary>
+        /// Cancel an appointment as lecturer (lecturer only)
+        /// </summary>
+        [HttpPost("{id}/lecturer-cancel")]
+        [Authorize(Policy = "LecturerOnly")]
+        public IActionResult LecturerCancelAppointment(int id, [FromBody] CancelAppointmentByLecturerRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId)) return BadRequest("Missing or invalid user claim");
+
+            bool ok = _appointmentService.LecturerCancelAppointment(id, userId, request.Reason, out var error);
+            if (!ok)
+            {
+                if (error.Contains("can only cancel"))
+                {
+                    return Forbid();
+                }
+                return BadRequest(new { message = error });
+            }
+
+            return Ok(new { message = "Appointment cancelled" });
+        }
+
+        /// <summary>
+        /// Mark an appointment as completed (lecturer only)
+        /// </summary>
+        [HttpPost("{id}/complete")]
+        [Authorize(Policy = "LecturerOnly")]
+        public IActionResult CompleteAppointment(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId)) return BadRequest("Missing or invalid user claim");
+
+            bool ok = _appointmentService.CompleteAppointment(id, userId, out var error);
+            if (!ok)
+            {
+                if (error.Contains("can only complete"))
+                {
+                    return Forbid();
+                }
+                return BadRequest(new { message = error });
+            }
+
+            return Ok(new { message = "Appointment completed" });
+        }
+
         private AppointmentDetailResponse MapToDetailResponse(Appointment appointment)
         {
             return new AppointmentDetailResponse

@@ -76,6 +76,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddScoped<IAppointmentService,AppointmentService>(); // Cấu hình đăng kí Service
 builder.Services.AddScoped<AcademicAppoinment.Services.Lecturers.ILecturerService, AcademicAppoinment.Services.Lecturers.LecturerService>(); // Lecturer service registration
+builder.Services.AddScoped<AcademicAppoinment.Services.Lecturers.IAvailabilitySlotService, AcademicAppoinment.Services.Lecturers.AvailabilitySlotService>(); // AvailabilitySlot service registration
 
 // Configure the HTTP request pipeline.
 var app = builder.Build();
