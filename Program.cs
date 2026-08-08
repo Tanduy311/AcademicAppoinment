@@ -1,4 +1,5 @@
 using AcademicAppoinment.Models;
+using AcademicAppoinment.Services.Appoiment;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -66,6 +67,8 @@ builder.Services.AddSwaggerGen(options =>
          }
      });
 });
+builder.Services.AddScoped<IAppointmentService,AppointmentService>(); // Cấu hình đăng kí Service
+
 // Configure the HTTP request pipeline.
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
