@@ -19,50 +19,31 @@ namespace AcademicAppoinment.Controllers
         [HttpPost("register-student")]
         public async Task<IActionResult> RegisterStudent([FromBody] RegisterStudentDto dto)
         {
-            return await HandleAsync(() => _authService.RegisterStudentAsync(dto));
+            var result = await _authService.RegisterStudentAsync(dto);
+            return Ok(result);
         }
 
         [HttpPost("register-lecturer")]
         public async Task<IActionResult> RegisterLecturer([FromBody] RegisterLecturerDto dto)
         {
-            return await HandleAsync(() => _authService.RegisterLecturerAsync(dto));
+            var result = await _authService.RegisterLecturerAsync(dto);
+            return Ok(result);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            return await HandleAsync(() => _authService.LoginAsync(dto));
+            var result = await _authService.LoginAsync(dto);
+            return Ok(result);
         }
 
         [HttpGet("me")]
         [Authorize]
         public async Task<IActionResult> GetCurrentUser()
         {
-            return await HandleAsync(() => _authService.GetCurrentUserAsync(User));
-        }
-
-        private async Task<IActionResult> HandleAsync<T>(Func<Task<T>> action)
-        {
-            try
-            {
-                return Ok(await action());
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(string.IsNullOrWhiteSpace(ex.Message) ? null : ex.Message);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch
-            {
-                return StatusCode(500, "Đã xảy ra lỗi không xác định.");
-            }
+            var result = await _authService.GetCurrentUserAsync(User);
+            return Ok(result);
         }
     }
 }
+

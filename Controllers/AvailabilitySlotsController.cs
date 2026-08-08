@@ -1,5 +1,4 @@
 using AcademicAppoinment.DTOs.Slot;
-using AcademicAppoinment.Helpers.Exceptions;
 using AcademicAppoinment.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,83 +20,32 @@ namespace AcademicAppoinment.Controllers
         [Authorize(Roles = "Lecturer")]
         public async Task<IActionResult> CreateSlot([FromBody] CreateSlotDto dto)
         {
-            return await HandleOkAsync(() => _slotService.CreateSlotAsync(dto, User));
+            var result = await _slotService.CreateSlotAsync(dto, User);
+            return Ok(result);
         }
 
         [HttpGet("my-slots")]
         [Authorize(Roles = "Lecturer")]
         public async Task<IActionResult> GetMySlots()
         {
-            return await HandleOkAsync(() => _slotService.GetMySlotsAsync(User));
+            var result = await _slotService.GetMySlotsAsync(User);
+            return Ok(result);
         }
 
         [HttpGet("lecturer/{lecturerId}")]
         public async Task<IActionResult> GetSlotsByLecturer(int lecturerId)
         {
-            return await HandleOkAsync(() => _slotService.GetSlotsByLecturerAsync(lecturerId));
+            var result = await _slotService.GetSlotsByLecturerAsync(lecturerId);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Lecturer")]
         public async Task<IActionResult> DeleteSlot(int id)
         {
-            return await HandleActionAsync(async () => Ok(new { message = await _slotService.DeleteSlotAsync(id, User) }));
-        }
-
-        private async Task<IActionResult> HandleOkAsync<T>(Func<Task<T>> action)
-        {
-            try
-            {
-                return Ok(await action());
-            }
-            catch (ForbiddenAccessException ex)
-            {
-                return StatusCode(403, ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(string.IsNullOrWhiteSpace(ex.Message) ? null : ex.Message);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch
-            {
-                return StatusCode(500, "Đã xảy ra lỗi không xác định.");
-            }
-        }
-
-        private async Task<IActionResult> HandleActionAsync(Func<Task<IActionResult>> action)
-        {
-            try
-            {
-                return await action();
-            }
-            catch (ForbiddenAccessException ex)
-            {
-                return StatusCode(403, ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(string.IsNullOrWhiteSpace(ex.Message) ? null : ex.Message);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch
-            {
-                return StatusCode(500, "Đã xảy ra lỗi không xác định.");
-            }
+            var message = await _slotService.DeleteSlotAsync(id, User);
+            return Ok(new { message });
         }
     }
 }
+

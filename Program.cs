@@ -8,6 +8,8 @@ builder.Services.AddAcademicAppointmentServices(builder.Configuration);
 // Configure the HTTP request pipeline.
 var app = builder.Build();
 
+app.UseMiddleware<AcademicAppoinment.Middlewares.GlobalExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();

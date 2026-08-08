@@ -1,5 +1,4 @@
 using AcademicAppoinment.DTOs.Appointments;
-using AcademicAppoinment.Helpers.Exceptions;
 using AcademicAppoinment.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,102 +20,49 @@ namespace AcademicAppoinment.Controllers
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> CreateAppointment([FromBody] CreateAppointmentDto dto)
         {
-            return await HandleActionAsync(async () =>
-            {
-                var created = await _appointmentService.CreateAppointmentAsync(dto, User);
-                return CreatedAtAction(nameof(GetAppointmentById), new { id = created.AppointmentId }, created);
-            });
+            var created = await _appointmentService.CreateAppointmentAsync(dto, User);
+            return CreatedAtAction(nameof(GetAppointmentById), new { id = created.AppointmentId }, created);
         }
 
         [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetAppointmentById(int id)
         {
-            return await HandleOkAsync(() => _appointmentService.GetAppointmentByIdAsync(id, User));
+            var result = await _appointmentService.GetAppointmentByIdAsync(id, User);
+            return Ok(result);
         }
 
         [HttpGet("my-appointments")]
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> GetMyAppointments()
         {
-            return await HandleOkAsync(() => _appointmentService.GetMyAppointmentsAsync(User));
+            var result = await _appointmentService.GetMyAppointmentsAsync(User);
+            return Ok(result);
         }
 
         [HttpGet("lecturer-appointments")]
         [Authorize(Roles = "Lecturer")]
         public async Task<IActionResult> GetLecturerAppointments()
         {
-            return await HandleOkAsync(() => _appointmentService.GetLecturerAppointmentsAsync(User));
+            var result = await _appointmentService.GetLecturerAppointmentsAsync(User);
+            return Ok(result);
         }
 
         [HttpPut("{id}/status")]
         [Authorize(Roles = "Lecturer")]
         public async Task<IActionResult> UpdateAppointmentStatus(int id, [FromBody] UpdateAppointmentStatusDto dto)
         {
-            return await HandleOkAsync(() => _appointmentService.UpdateAppointmentStatusAsync(id, dto, User));
+            var result = await _appointmentService.UpdateAppointmentStatusAsync(id, dto, User);
+            return Ok(result);
         }
 
         [HttpPut("{id}/cancel")]
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> CancelAppointment(int id, [FromBody] CancelAppointmentDto dto)
         {
-            return await HandleOkAsync(() => _appointmentService.CancelAppointmentAsync(id, dto, User));
-        }
-
-        private async Task<IActionResult> HandleOkAsync<T>(Func<Task<T>> action)
-        {
-            try
-            {
-                return Ok(await action());
-            }
-            catch (ForbiddenAccessException ex)
-            {
-                return StatusCode(403, ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(string.IsNullOrWhiteSpace(ex.Message) ? null : ex.Message);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch
-            {
-                return StatusCode(500, "Đã xảy ra lỗi không xác định.");
-            }
-        }
-
-        private async Task<IActionResult> HandleActionAsync(Func<Task<IActionResult>> action)
-        {
-            try
-            {
-                return await action();
-            }
-            catch (ForbiddenAccessException ex)
-            {
-                return StatusCode(403, ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(string.IsNullOrWhiteSpace(ex.Message) ? null : ex.Message);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch
-            {
-                return StatusCode(500, "Đã xảy ra lỗi không xác định.");
-            }
+            var result = await _appointmentService.CancelAppointmentAsync(id, dto, User);
+            return Ok(result);
         }
     }
 }
+
