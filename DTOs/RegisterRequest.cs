@@ -11,7 +11,7 @@ namespace AcademicAppoinment.DTOs
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters long")]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Email can't be empty")]
         [EmailAddress(ErrorMessage = "Email is not right format")]
         public string Email { get; set; }
     }

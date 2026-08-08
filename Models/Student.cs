@@ -10,9 +10,8 @@ namespace AcademicAppoinment.Models
         // Khóa ngoại đến User
         public int UserId { get; set; }
 
-        [Required]
         [MaxLength(50)]
-        public string? StudentCode { get; set; } = null!;
+        public string? StudentCode { get; set; }
 
 
         [MaxLength(150)]
