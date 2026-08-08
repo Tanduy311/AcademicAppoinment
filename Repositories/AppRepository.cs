@@ -38,6 +38,29 @@ namespace AcademicAppoinment.Repositories
                 .Include(u => u.Lecturer)
                 .FirstOrDefaultAsync(u => u.UserId == userId);
 
+        public Task<User?> GetUserByIdWithDetailsAsync(int userId) =>
+            _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.Student)
+                .Include(u => u.Lecturer)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+        public Task<List<User>> GetUsersAsync() =>
+            _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.Student)
+                .Include(u => u.Lecturer)
+                .OrderByDescending(u => u.CreatedAt)
+                .ToListAsync();
+
+        public Task<List<Role>> GetRolesAsync() =>
+            _context.Roles
+                .OrderBy(r => r.RoleId)
+                .ToListAsync();
+
+        public Task<Role?> GetRoleByIdAsync(int roleId) =>
+            _context.Roles.FirstOrDefaultAsync(r => r.RoleId == roleId);
+
         public Task<Student?> GetStudentWithUserByIdAsync(int studentId) =>
             _context.Students
                 .Include(s => s.User)
@@ -48,6 +71,22 @@ namespace AcademicAppoinment.Repositories
                 .Include(s => s.User)
                 .FirstOrDefaultAsync(s => s.UserId == userId);
 
+        public Task<List<Student>> GetStudentsAsync() =>
+            _context.Students
+                .Include(s => s.User)
+                .Include(s => s.Appointments)
+                .ToListAsync();
+
+        public Task<Student?> GetStudentByIdWithDetailsAsync(int studentId) =>
+            _context.Students
+                .Include(s => s.User)
+                .Include(s => s.Appointments)
+                    .ThenInclude(a => a.Lecturer)
+                        .ThenInclude(l => l!.User)
+                .Include(s => s.Appointments)
+                    .ThenInclude(a => a.AvailabilitySlot)
+                .FirstOrDefaultAsync(s => s.StudentId == studentId);
+
         public Task<Lecturer?> GetLecturerWithUserByIdAsync(int lecturerId) =>
             _context.Lecturers
                 .Include(l => l.User)
@@ -57,6 +96,18 @@ namespace AcademicAppoinment.Repositories
             _context.Lecturers
                 .Include(l => l.User)
                 .FirstOrDefaultAsync(l => l.UserId == userId);
+
+        public Task<List<Lecturer>> GetLecturersAsync() =>
+            _context.Lecturers
+                .Include(l => l.User)
+                .Include(l => l.AvailabilitySlots)
+                .ToListAsync();
+
+        public Task<Lecturer?> GetLecturerByIdWithDetailsAsync(int lecturerId) =>
+            _context.Lecturers
+                .Include(l => l.User)
+                .Include(l => l.AvailabilitySlots)
+                .FirstOrDefaultAsync(l => l.LecturerId == lecturerId);
 
         public Task<AvailabilitySlot?> GetAvailabilitySlotWithLecturerAsync(int slotId) =>
             _context.AvailabilitySlots

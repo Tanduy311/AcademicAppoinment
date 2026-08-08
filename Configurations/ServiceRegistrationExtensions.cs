@@ -31,6 +31,9 @@ namespace AcademicAppoinment.Configurations
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IAvailabilitySlotService, AvailabilitySlotService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<ILecturerService, LecturerService>();
+            services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IAdminService, AdminService>();
 
 
             services.AddDbContext<AppDbContext>(options =>

@@ -19,10 +19,10 @@ namespace AcademicAppoinment.Models
 
         [EmailAddress]
         [Required]
-        public string EmailAddress { get; set; }
+        public required string EmailAddress { get; set; }
 
         [MaxLength(50)]
-        public string FullName {  get; set; }
+        public required string FullName { get; set; }
 
         // Khóa ngoại tới Role
         public int RoleId { get; set; }
