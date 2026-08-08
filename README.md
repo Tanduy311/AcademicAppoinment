@@ -1,4 +1,4 @@
-## 🌿 Quy tắc làm việc với Git
+## Quy tắc làm việc với Git
 
 ### Tạo branch mới trước khi code
 
@@ -16,7 +16,7 @@ git push origin feature/ten-chuc-nang
 
 ### Tạo Pull Request để merge vào main
 
-Vào GitHub → **Pull Requests** → **New Pull Request** → chọn branch của bạn → nhờ người khác review trước khi merge.
+Vào GitHub -> **Pull Requests** -> **New Pull Request** -> chọn branch của bạn -> nhờ người khác review trước khi merge.
 
 ### Quy tắc đặt tên branch
 
@@ -25,5 +25,3 @@ Vào GitHub → **Pull Requests** → **New Pull Request** → chọn branch c�
 | Tính năng mới | `feature/login` |
 | Sửa lỗi | `fix/loi-dang-nhap` |
 | Database | `db/them-bang-orders` |
-
----

@@ -1,0 +1,7 @@
+﻿<Solution>
+  <Project Path="AcademicAppointment.API/AcademicAppointment.API.csproj" />
+  <Project Path="AcademicAppointment.Application/AcademicAppointment.Application.csproj" />
+  <Project Path="AcademicAppointment.Domain/AcademicAppointment.Domain.csproj" />
+  <Project Path="AcademicAppointment.Infrastructure/AcademicAppointment.Infrastructure.csproj" />
+</Solution>
+
