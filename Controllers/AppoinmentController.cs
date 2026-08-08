@@ -28,15 +28,15 @@ namespace AcademicAppoinment.Controllers
         */
         //[Authorize]
         [HttpGet("{id}")]
-        public IActionResult GetAppointmentById(int id, string role, int userId)
+        public IActionResult GetAppointmentById(int id)
         {
-            // Lấy claim UserId trong JWT
-            //var userId = int.Parse(
-            //    User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-            //);
+            //Lấy claim UserId trong JWT
+           var userId = int.Parse(
+               User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+           );
 
-            // Lấy role trong JWT
-            //var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            //Lấy role trong JWT
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
             var appointment = _appointmentService.GetAppointmentByIdForUser(id, userId, role);
             
             if (appointment == null)
