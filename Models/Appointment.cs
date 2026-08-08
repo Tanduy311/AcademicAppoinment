@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace AcademicAppoinment.Models
@@ -7,13 +7,8 @@ namespace AcademicAppoinment.Models
     {
         public int AppointmentId { get; set; }
 
-        // Khóa ngoại đến Student
         public int StudentId { get; set; }
-
-        // Khóa ngoại đến Lecturer
         public int LecturerId { get; set; }
-
-        // Khóa ngoại đến AvailabilitySlot
         public int AvailabilitySlotId { get; set; }
 
         [Required]
@@ -27,14 +22,9 @@ namespace AcademicAppoinment.Models
         public string Status { get; set; } = "Pending";
 
         public string? LecturerResponse { get; set; }
-
         public string? CancellationReason { get; set; }
-
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-
         public DateTime? UpdatedAt { get; set; }
-
-        // Navigation properties
 
         [JsonIgnore]
         public Student? Student { get; set; }
@@ -46,7 +36,6 @@ namespace AcademicAppoinment.Models
         public AvailabilitySlot? AvailabilitySlot { get; set; }
 
         [JsonIgnore]
-        public ICollection<Notification> Notifications { get; set; }
-            = new List<Notification>();
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 }
