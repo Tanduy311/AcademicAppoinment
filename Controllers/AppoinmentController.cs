@@ -22,21 +22,15 @@ namespace AcademicAppoinment.Controllers
             _appointmentService = appointmentService;
         }
 
-        /* Phân quyền:
-         * Chỉ những user có StudentId/LectureId trùng với 
-         * StudentId/LectureId mới coi đc appoinment detail đó        
-        */
-        //[Authorize]
         [HttpGet("{id}")]
         public IActionResult GetAppointmentById(int id)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(roleClaim))
+            if (!int.TryParse(userIdClaim, out var userId) || string.IsNullOrEmpty(roleClaim))
             {
-                return BadRequest("User claims not found. Provide valid JWT or pass userId and role as query for testing.");
+                return BadRequest("Missing or invalid user claims");
             }
-            var userId = int.Parse(userIdClaim);
             var role = roleClaim;
 
             var appointment = _appointmentService.GetAppointmentByIdForUser(id, userId, role);
@@ -53,8 +47,7 @@ namespace AcademicAppoinment.Controllers
         public IActionResult CreateAppointment([FromBody] DTOs.CreateAppointmentRequest request)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim)) return BadRequest("Missing user claim");
-            var userId = int.Parse(userIdClaim);
+            if (!int.TryParse(userIdClaim, out var userId)) return BadRequest("Missing or invalid user claim");
 
             try
             {
@@ -75,8 +68,7 @@ namespace AcademicAppoinment.Controllers
         public IActionResult GetStudentAppointments([FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim)) return BadRequest("Missing user claim");
-            var userId = int.Parse(userIdClaim);
+            if (!int.TryParse(userIdClaim, out var userId)) return BadRequest("Missing or invalid user claim");
 
             var items = _appointmentService.GetAppointmentsForStudent(userId, status, page, pageSize);
             var result = items.Select(a => new {
@@ -96,8 +88,7 @@ namespace AcademicAppoinment.Controllers
         public IActionResult StudentCancel(int id, [FromBody] DTOs.CancelAppointmentRequest request)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim)) return BadRequest("Missing user claim");
-            var userId = int.Parse(userIdClaim);
+            if (!int.TryParse(userIdClaim, out var userId)) return BadRequest("Missing or invalid user claim");
 
             var ok = _appointmentService.StudentCancelAppointment(id, userId, request.Reason, out var error);
             if (!ok) return BadRequest(new { message = error });

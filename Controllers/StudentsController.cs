@@ -1,5 +1,9 @@
+using System;
+using System.IO;
+using System.Linq;
 using AcademicAppoinment.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicAppoinment.Controllers
 {
@@ -17,11 +21,12 @@ namespace AcademicAppoinment.Controllers
         }
 
         [HttpPost("upload-progress")]
-        public IActionResult UploadProgress([FromForm] IFormFile file)
+        [Consumes("multipart/form-data")]
+        public IActionResult UploadProgress([FromForm] AcademicAppoinment.DTOs.UploadProgressRequest req)
         {
+            var file = req?.File;
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim)) return BadRequest("Missing user claim");
-            var userId = int.Parse(userIdClaim);
+            if (!int.TryParse(userIdClaim, out var userId)) return BadRequest("Missing or invalid user claim");
 
             var student = _context.Students.FirstOrDefault(s => s.UserId == userId);
             if (student == null) return BadRequest("Student not found");
@@ -44,7 +49,8 @@ namespace AcademicAppoinment.Controllers
                 StudentId = student.StudentId,
                 FileName = fileName,
                 FilePath = savePath,
-                ContentType = file.ContentType
+                ContentType = file.ContentType,
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.StudentProgresses.Add(record);
