@@ -1,6 +1,117 @@
-@AcademicAppoinment_HostAddress = http://localhost:5168
+@AcademicAppoinment_HostAddress = http://localhost:5010
+@BearerToken = MySuperUltraMegaSecretKey_1234567890_ABCDEF)!$#(hehe
+@AcademicAppoinment_HostAddress = https://localhost:7189
 
-GET {{AcademicAppoinment_HostAddress}}/weatherforecast/
+@HostAddress = https://localhost:7189
+@BearerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ...
+
+GET {{HostAddress}}/api/appointments/5
+Authorization: Bearer {{BearerToken}}
 Accept: application/json
+### =====================================================
+### AVAILABILITY SLOT APIs (Lecturer Only)
+### =====================================================
+
+### 1. CREATE NEW AVAILABILITY SLOT
+### Method: POST /api/availability-slots
+### Required: Valid JWT token with Lecturer role
+POST {{AcademicAppoinment_HostAddress}}/api/availability-slots
+Content-Type: application/json
+Authorization: Bearer {{BearerToken}}
+
+{
+  "startTime": "2026-08-09T10:00:00",
+  "endTime": "2026-08-09T11:00:00",
+  "meetingType": "Online",
+  "locationOrLink": "https://meet.google.com/abc-def-ghi"
+}
+
+###
+
+### 2. GET ALL MY AVAILABILITY SLOTS
+### Method: GET /api/availability-slots/my-slots
+### Returns: List of all slots created by current lecturer
+GET {{AcademicAppoinment_HostAddress}}/api/availability-slots/my-slots
+Authorization: Bearer {{BearerToken}}
+Accept: application/json
+
+###
+
+### 3. UPDATE AVAILABILITY SLOT
+### Method: PUT /api/availability-slots/{id}
+### Example: id = 1
+PUT {{AcademicAppoinment_HostAddress}}/api/availability-slots/1
+Content-Type: application/json
+Authorization: Bearer {{BearerToken}}
+
+{
+  "startTime": "2026-08-10T14:00:00",
+  "endTime": "2026-08-10T15:30:00",
+  "meetingType": "In-person",
+  "locationOrLink": "Room 301, Building A"
+}
+
+###
+
+### 4. DELETE AVAILABILITY SLOT
+### Method: DELETE /api/availability-slots/{id}
+### Note: Can only delete if no active appointments exist
+DELETE {{AcademicAppoinment_HostAddress}}/api/availability-slots/1
+Authorization: Bearer {{BearerToken}}
+
+###
+
+### =====================================================
+### APPOINTMENT MANAGEMENT APIs (Lecturer Only)
+### =====================================================
+
+### 5. GET PENDING APPOINTMENTS FOR LECTURER
+### Method: GET /api/appointments/lecturer/pending
+### Returns: All pending appointment requests for this lecturer
+GET {{AcademicAppoinment_HostAddress}}/api/appointments/lecturer/pending
+Authorization: Bearer {{BearerToken}}
+Accept: application/json
+
+###
+
+### 6. APPROVE APPOINTMENT
+### Method: POST /api/appointments/{id}/approve
+### Example: id = 5
+POST {{AcademicAppoinment_HostAddress}}/api/appointments/5/approve
+Authorization: Bearer {{BearerToken}}
+
+###
+
+### 7. REJECT APPOINTMENT (with required reason)
+### Method: POST /api/appointments/{id}/reject
+### Example: id = 5
+POST {{AcademicAppoinment_HostAddress}}/api/appointments/5/reject
+Content-Type: application/json
+Authorization: Bearer {{BearerToken}}
+
+{
+  "reason": "I'm not available at this time. Please choose another slot."
+}
+
+###
+
+### 8. CANCEL APPOINTMENT (Lecturer-initiated)
+### Method: POST /api/appointments/{id}/lecturer-cancel
+### Example: id = 5
+POST {{AcademicAppoinment_HostAddress}}/api/appointments/5/lecturer-cancel
+Content-Type: application/json
+Authorization: Bearer {{BearerToken}}
+
+{
+  "reason": "Emergency meeting scheduled. Need to reschedule our appointment."
+}
+
+###
+
+### 9. MARK APPOINTMENT AS COMPLETED
+### Method: POST /api/appointments/{id}/complete
+### Example: id = 5
+POST {{AcademicAppoinment_HostAddress}}/api/appointments/5/complete
+Authorization: Bearer {{BearerToken}}
 
 ###
