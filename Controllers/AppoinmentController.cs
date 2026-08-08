@@ -28,15 +28,17 @@ namespace AcademicAppoinment.Controllers
         */
         //[Authorize]
         [HttpGet("{id}")]
-        public IActionResult GetAppointmentById(int id, string role, int userId)
+        public IActionResult GetAppointmentById(int id)
         {
-            // Lấy claim UserId trong JWT
-            //var userId = int.Parse(
-            //    User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-            //);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(roleClaim))
+            {
+                return BadRequest("User claims not found. Provide valid JWT or pass userId and role as query for testing.");
+            }
+            var userId = int.Parse(userIdClaim);
+            var role = roleClaim;
 
-            // Lấy role trong JWT
-            //var role = User.FindFirst(ClaimTypes.Role)?.Value;
             var appointment = _appointmentService.GetAppointmentByIdForUser(id, userId, role);
             
             if (appointment == null)
@@ -45,6 +47,61 @@ namespace AcademicAppoinment.Controllers
             }
 
             return Ok(MapToDetailResponse(appointment));
+        }
+
+        [HttpPost]
+        public IActionResult CreateAppointment([FromBody] DTOs.CreateAppointmentRequest request)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return BadRequest("Missing user claim");
+            var userId = int.Parse(userIdClaim);
+
+            try
+            {
+                var appointment = _appointmentService.CreateAppointment(userId, request);
+                return Ok(new { appointmentId = appointment.AppointmentId, message = "Appointment created" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating appointment." });
+            }
+        }
+
+        [HttpGet("/api/appointments/student")]
+        public IActionResult GetStudentAppointments([FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return BadRequest("Missing user claim");
+            var userId = int.Parse(userIdClaim);
+
+            var items = _appointmentService.GetAppointmentsForStudent(userId, status, page, pageSize);
+            var result = items.Select(a => new {
+                a.AppointmentId,
+                a.Topic,
+                a.Description,
+                a.Status,
+                a.CreatedAt,
+                Lecturer = new { a.Lecturer.LecturerId, FullName = a.Lecturer.User?.FullName },
+                Slot = new { a.AvailabilitySlot.AvailabilitySlotId, a.AvailabilitySlot.StartTime, a.AvailabilitySlot.EndTime }
+            });
+
+            return Ok(result);
+        }
+
+        [HttpPost("{id}/student-cancel")]
+        public IActionResult StudentCancel(int id, [FromBody] DTOs.CancelAppointmentRequest request)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return BadRequest("Missing user claim");
+            var userId = int.Parse(userIdClaim);
+
+            var ok = _appointmentService.StudentCancelAppointment(id, userId, request.Reason, out var error);
+            if (!ok) return BadRequest(new { message = error });
+            return Ok(new { message = "Appointment cancelled" });
         }
 
         private AppointmentDetailResponse MapToDetailResponse(Appointment appointment)

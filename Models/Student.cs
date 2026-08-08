@@ -33,6 +33,9 @@ namespace AcademicAppoinment.Models
         public ICollection<Appointment> Appointments { get; set; }
             = new List<Appointment>();
 
+        [JsonIgnore]
+        public ICollection<StudentProgress> StudentProgresses { get; set; } = new List<StudentProgress>();
+
         //[JsonIgnore]
         //public ICollection<Notification> Notifications { get; set; }
         //    = new List<Notification>();
