@@ -30,6 +30,8 @@ namespace AcademicAppoinment.Configurations
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IAvailabilitySlotService, AvailabilitySlotService>();
+            services.AddScoped<INotificationService, NotificationService>();
+
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DBConnection")));

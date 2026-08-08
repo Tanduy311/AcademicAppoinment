@@ -26,6 +26,11 @@ namespace AcademicAppoinment.Repositories
         Task<List<Appointment>> GetAppointmentsByStudentIdAsync(int studentId);
         Task<List<Appointment>> GetAppointmentsByLecturerIdAsync(int lecturerId);
 
+        Task<List<Notification>> GetNotificationsByUserIdAsync(int userId);
+        Task<Notification?> GetNotificationByIdAsync(int notificationId);
+        Task<int> GetUnreadNotificationCountByUserIdAsync(int userId);
+
+
         void AddUser(User user);
         void AddStudent(Student student);
         void AddLecturer(Lecturer lecturer);

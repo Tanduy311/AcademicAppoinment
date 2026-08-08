@@ -110,6 +110,19 @@ namespace AcademicAppoinment.Repositories
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
 
+        public Task<List<Notification>> GetNotificationsByUserIdAsync(int userId) =>
+            _context.Notifications
+                .Where(n => n.UserId == userId)
+                .OrderByDescending(n => n.CreatedAt)
+                .ToListAsync();
+
+        public Task<Notification?> GetNotificationByIdAsync(int notificationId) =>
+            _context.Notifications.FirstOrDefaultAsync(n => n.NotificationId == notificationId);
+
+        public Task<int> GetUnreadNotificationCountByUserIdAsync(int userId) =>
+            _context.Notifications.CountAsync(n => n.UserId == userId && !n.IsRead);
+
+
         public void AddUser(User user) => _context.Users.Add(user);
 
         public void AddStudent(Student student) => _context.Students.Add(student);
