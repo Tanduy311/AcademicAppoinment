@@ -162,6 +162,11 @@ namespace AcademicAppoinment.Services
             appointment.LecturerResponse = dto.LecturerResponse;
             appointment.UpdatedAt = DateTime.Now;
 
+            if (normalizedStatus == "Rejected" && appointment.AvailabilitySlot != null)
+            {
+                appointment.AvailabilitySlot.IsAvailable = true;
+            }
+
             _repository.AddNotification(new Notification
             {
                 UserId = appointment.Student!.UserId,
@@ -219,6 +224,11 @@ namespace AcademicAppoinment.Services
             appointment.Status = "Cancelled";
             appointment.CancellationReason = dto.CancellationReason;
             appointment.UpdatedAt = DateTime.Now;
+
+            if (appointment.AvailabilitySlot != null)
+            {
+                appointment.AvailabilitySlot.IsAvailable = true;
+            }
 
             if (appointment.Lecturer != null)
             {

@@ -184,7 +184,7 @@ BEGIN TRY
        AND NOT EXISTS (SELECT 1 FROM [Appointments] WHERE [AvailabilitySlotId] = @SlotId_1)
     BEGIN
         INSERT INTO [Appointments] ([StudentId], [LecturerId], [AvailabilitySlotId], [Topic], [Description], [Status], [LecturerResponse], [CreatedAt], [UpdatedAt])
-        VALUES (@StuId_1, @LecId_A, @SlotId_1, N'Tư vấn Đồ án Học kỳ 2', N'Em muốn nhờ Thầy hướng dẫn định hướng đề tài C# ASP.NET Core.', N'Approved', N'Thầy đồng ý, em đến đúng giờ nhé.', GETDATE(), GETDATE());
+        VALUES (@StuId_1, @LecId_A, @SlotId_1, N'Tư vấn Đồ án Học kỳ 2', N'Em muốn nhờ Thầy hướng dẫn định hướng đề tài C# ASP.NET Core.', N'Confirmed', N'Thầy đồng ý, em đến đúng giờ nhé.', GETDATE(), GETDATE());
     END
 
     -- 7. CHÈN DỮ LIỆU BẢNG Notifications
