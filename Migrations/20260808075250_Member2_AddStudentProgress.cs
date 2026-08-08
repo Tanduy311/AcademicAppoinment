@@ -31,7 +31,7 @@ namespace AcademicAppoinment.Migrations
                         column: x => x.StudentId,
                         principalTable: "Students",
                         principalColumn: "StudentId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

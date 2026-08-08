@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace AcademicAppoinment.Tests;
 
 public class UnitTest1

@@ -125,6 +125,14 @@ namespace AcademicAppoinment.Models
                     RoleName = "Lecturer"
                 }
             );
+
+            // StudentProgress 1 - N Student (configure delete behavior to match project's convention: Restrict/NoAction)
+            modelBuilder.Entity<StudentProgress>()
+                .HasOne(sp => sp.Student)
+                .WithMany(s => s.StudentProgresses)
+                .HasForeignKey(sp => sp.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

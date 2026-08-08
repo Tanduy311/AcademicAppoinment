@@ -22,4 +22,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Exclude test projects/files placed under the solution folder from being compiled into the main web project -->
+    <Compile Remove="tests\**\*.cs" />
+  </ItemGroup>
 </Project>

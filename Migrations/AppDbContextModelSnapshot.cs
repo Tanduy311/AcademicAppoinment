@@ -459,9 +459,9 @@ namespace AcademicAppoinment.Migrations
             modelBuilder.Entity("AcademicAppoinment.Models.StudentProgress", b =>
                 {
                     b.HasOne("AcademicAppoinment.Models.Student", "Student")
-                        .WithMany()
+                        .WithMany("StudentProgresses")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Student");
@@ -503,6 +503,8 @@ namespace AcademicAppoinment.Migrations
             modelBuilder.Entity("AcademicAppoinment.Models.Student", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("StudentProgresses");
                 });
 
             modelBuilder.Entity("AcademicAppoinment.Models.User", b =>

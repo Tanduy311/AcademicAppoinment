@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicAppoinment.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260808071833_Member2_AddStudentProgress")]
+    [Migration("20260808075250_Member2_AddStudentProgress")]
     partial class Member2_AddStudentProgress
     {
         /// <inheritdoc />
@@ -462,9 +462,9 @@ namespace AcademicAppoinment.Migrations
             modelBuilder.Entity("AcademicAppoinment.Models.StudentProgress", b =>
                 {
                     b.HasOne("AcademicAppoinment.Models.Student", "Student")
-                        .WithMany()
+                        .WithMany("StudentProgresses")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Student");
@@ -506,6 +506,8 @@ namespace AcademicAppoinment.Migrations
             modelBuilder.Entity("AcademicAppoinment.Models.Student", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("StudentProgresses");
                 });
 
             modelBuilder.Entity("AcademicAppoinment.Models.User", b =>
