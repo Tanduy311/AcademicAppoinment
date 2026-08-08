@@ -18,6 +18,7 @@ namespace AcademicAppoinment.Models
         public DbSet<AvailabilitySlot> AvailabilitySlots { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<StudentProgress> StudentProgresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
