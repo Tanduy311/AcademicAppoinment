@@ -25,6 +25,50 @@ namespace AcademicAppoinment.Controllers
         }
 
         [Authorize]
+        [HttpPut("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest ChangePassword)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated or expired." });
+            }
+
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            bool isCurrentPasswordValid = BCrypt.Net.BCrypt.Verify(ChangePassword.CurrentPassword, user.PasswordHash);
+            if (!isCurrentPasswordValid)
+            {
+                return BadRequest(new { message = "Current password is incorrect." });
+            }
+
+            if(BCrypt.Net.BCrypt.Verify(ChangePassword.NewPassword, user.PasswordHash))
+            { 
+                return BadRequest(new { message = "New password cannot be the same as the current password." });
+            }
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(ChangePassword.NewPassword);
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Password changed successfully." });
+        }
+        
+
+        [Authorize]
         [HttpGet("Me")]
         public async Task<IActionResult> GetMe()
         {
@@ -39,7 +83,7 @@ namespace AcademicAppoinment.Controllers
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.UserId == userId);
 
-            if(user == null)
+            if (user == null)
             {
                 return NotFound(new { message = "User not found." });
             }
@@ -50,11 +94,11 @@ namespace AcademicAppoinment.Controllers
                 accountName = user.AccountName,
                 fullName = user.FullName,
                 emailAddress = user.EmailAddress,
-                role = user.Role.RoleName?? "Unknown"
+                role = user.Role.RoleName ?? "Unknown"
             });
         }
 
-            [HttpPost("Login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest login)
         {
             var user = await _context.Users
@@ -63,7 +107,7 @@ namespace AcademicAppoinment.Controllers
 
             if (user == null)
             {
-                return BadRequest( new { message = "Invalid account name or password." });
+                return BadRequest(new { message = "Invalid account name or password." });
             }
 
             if (!BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
@@ -116,7 +160,7 @@ namespace AcademicAppoinment.Controllers
                     AccountName = register.AccountName,
                     PasswordHash = hashPassword,
                     EmailAddress = register.Email,
-                    FullName = "your name",   
+                    FullName = "your name",
                     RoleId = role
                 };
 
@@ -131,7 +175,7 @@ namespace AcademicAppoinment.Controllers
                     };
                     _context.Students.Add(student);
                 }
-               
+
                 else if (role == 3)
                 {
                     var lecturer = new Lecturer
@@ -149,7 +193,7 @@ namespace AcademicAppoinment.Controllers
             catch (Exception e)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, new{ message = "An error occurred while processing your request." });
+                return StatusCode(500, new { message = "An error occurred while processing your request." });
             }
         }
 
@@ -174,12 +218,12 @@ namespace AcademicAppoinment.Controllers
                 issuer: _configuration["JwtSettings:Issuer"],
                 audience: _configuration["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(60),
+                expires: DateTime.UtcNow.AddMinutes(60),
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-         
+
     }
 }

@@ -14,7 +14,5 @@ namespace AcademicAppoinment.DTOs
         [Required]
         [EmailAddress(ErrorMessage = "Email is not right format")]
         public string Email { get; set; }
-
-        public string FullName { get; set; }
     }
 }
