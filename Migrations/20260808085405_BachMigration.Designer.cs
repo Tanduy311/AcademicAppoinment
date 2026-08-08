@@ -4,6 +4,7 @@ using AcademicAppoinment.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AcademicAppoinment.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260808085405_BachMigration")]
+    partial class BachMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -279,41 +282,6 @@ namespace AcademicAppoinment.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("AcademicAppoinment.Models.StudentProgress", b =>
-                {
-                    b.Property<int>("StudentProgressId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentProgressId"));
-
-                    b.Property<string>("ContentType")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("nvarchar(260)");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("StudentProgressId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("StudentProgresses");
-                });
-
             modelBuilder.Entity("AcademicAppoinment.Models.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -455,17 +423,6 @@ namespace AcademicAppoinment.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AcademicAppoinment.Models.StudentProgress", b =>
-                {
-                    b.HasOne("AcademicAppoinment.Models.Student", "Student")
-                        .WithMany("StudentProgresses")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-                });
-
             modelBuilder.Entity("AcademicAppoinment.Models.User", b =>
                 {
                     b.HasOne("AcademicAppoinment.Models.Role", "Role")
@@ -502,8 +459,6 @@ namespace AcademicAppoinment.Migrations
             modelBuilder.Entity("AcademicAppoinment.Models.Student", b =>
                 {
                     b.Navigation("Appointments");
-
-                    b.Navigation("StudentProgresses");
                 });
 
             modelBuilder.Entity("AcademicAppoinment.Models.User", b =>
