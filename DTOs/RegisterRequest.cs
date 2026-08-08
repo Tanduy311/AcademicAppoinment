@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AcademicAppoinment.DTOs
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RegisterRequest : ControllerBase
+    public class RegisterRequest
 
     {
         [Required(ErrorMessage = "User Name can't be empty")]

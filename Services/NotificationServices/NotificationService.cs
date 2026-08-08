@@ -29,6 +29,7 @@ namespace AcademicAppoinment.Services.NotificationServices
 
             var totalItems = query.Count();
 
+            // lấy một trang thông báo
             var notifications = query
                 .OrderByDescending(n => n.CreatedAt)
                 .Skip((page - 1) * pageSize)
@@ -57,5 +58,46 @@ namespace AcademicAppoinment.Services.NotificationServices
                 Items = notifications
             };
         }
+
+        public bool MarkAsRead(int notificationId, int userId)
+        {
+            var notification = _context.Notifications
+                .FirstOrDefault(n =>
+                    n.NotificationId == notificationId &&
+                    n.UserId == userId
+                );
+
+            if (notification == null)
+            {
+                return false;
+            }
+
+            notification.IsRead = true;
+
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public int MarkAllAsRead(int userId)
+        {
+            var notifications = _context.Notifications
+                .Where(n =>
+                    n.UserId == userId &&
+                    n.IsRead == false
+                )
+                .ToList();
+
+            foreach (var notification in notifications)
+            {
+                notification.IsRead = true;
+            }
+
+            _context.SaveChanges();
+
+            return notifications.Count;
+        }
+
+
     }
 }

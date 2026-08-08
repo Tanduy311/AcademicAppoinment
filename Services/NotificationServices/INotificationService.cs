@@ -9,5 +9,8 @@ namespace AcademicAppoinment.Services.NotificationServices
             int page,
             int pageSize,
             bool? isRead);
+        bool MarkAsRead(int notificationId, int userId);
+        int MarkAllAsRead(int userId);
     }
 }
+

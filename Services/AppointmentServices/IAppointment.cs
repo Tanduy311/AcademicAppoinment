@@ -4,10 +4,7 @@ namespace AcademicAppoinment.Services.Appoiment
 {
     public interface IAppointmentService
     {
-        Appointment? GetAppointmentByIdForUser(
-            int appointmentId,
-            int userId,
-            string role
+        Appointment? GetAppointmentByIdForUser(int appointmentId, int userId, string role
         );
     }
 }
