@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace AcademicAppoinment.Models
@@ -23,6 +23,8 @@ namespace AcademicAppoinment.Models
 
         public bool IsAvailable { get; set; } = true;
 
+        public bool IsDeleted { get; set; } = false;
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Navigation properties
@@ -31,6 +33,6 @@ namespace AcademicAppoinment.Models
         public Lecturer? Lecturer { get; set; }
 
         [JsonIgnore]
-        public Appointment? Appointment { get; set; }
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }
 }

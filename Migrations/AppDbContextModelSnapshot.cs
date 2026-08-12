@@ -67,7 +67,8 @@ namespace AcademicAppoinment.Migrations
                     b.HasKey("AppointmentId");
 
                     b.HasIndex("AvailabilitySlotId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Status] IN ('Pending', 'Confirmed')");
 
                     b.HasIndex("LecturerId");
 
@@ -91,6 +92,9 @@ namespace AcademicAppoinment.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<int>("LecturerId")
@@ -131,6 +135,7 @@ namespace AcademicAppoinment.Migrations
                         .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("LecturerCode")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -148,8 +153,7 @@ namespace AcademicAppoinment.Migrations
                     b.HasKey("LecturerId");
 
                     b.HasIndex("LecturerCode")
-                        .IsUnique()
-                        .HasFilter("[LecturerCode] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -261,6 +265,7 @@ namespace AcademicAppoinment.Migrations
                         .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("StudentCode")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -270,48 +275,12 @@ namespace AcademicAppoinment.Migrations
                     b.HasKey("StudentId");
 
                     b.HasIndex("StudentCode")
-                        .IsUnique()
-                        .HasFilter("[StudentCode] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("Students");
-                });
-
-            modelBuilder.Entity("AcademicAppoinment.Models.StudentProgress", b =>
-                {
-                    b.Property<int>("StudentProgressId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentProgressId"));
-
-                    b.Property<string>("ContentType")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("nvarchar(260)");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("StudentProgressId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("StudentProgresses");
                 });
 
             modelBuilder.Entity("AcademicAppoinment.Models.User", b =>
@@ -327,6 +296,14 @@ namespace AcademicAppoinment.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("AvatarBlobName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -335,6 +312,7 @@ namespace AcademicAppoinment.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FullName")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -368,8 +346,8 @@ namespace AcademicAppoinment.Migrations
             modelBuilder.Entity("AcademicAppoinment.Models.Appointment", b =>
                 {
                     b.HasOne("AcademicAppoinment.Models.AvailabilitySlot", "AvailabilitySlot")
-                        .WithOne("Appointment")
-                        .HasForeignKey("AcademicAppoinment.Models.Appointment", "AvailabilitySlotId")
+                        .WithMany("Appointments")
+                        .HasForeignKey("AvailabilitySlotId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -455,17 +433,6 @@ namespace AcademicAppoinment.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AcademicAppoinment.Models.StudentProgress", b =>
-                {
-                    b.HasOne("AcademicAppoinment.Models.Student", "Student")
-                        .WithMany("StudentProgresses")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-                });
-
             modelBuilder.Entity("AcademicAppoinment.Models.User", b =>
                 {
                     b.HasOne("AcademicAppoinment.Models.Role", "Role")
@@ -484,7 +451,7 @@ namespace AcademicAppoinment.Migrations
 
             modelBuilder.Entity("AcademicAppoinment.Models.AvailabilitySlot", b =>
                 {
-                    b.Navigation("Appointment");
+                    b.Navigation("Appointments");
                 });
 
             modelBuilder.Entity("AcademicAppoinment.Models.Lecturer", b =>
@@ -502,8 +469,6 @@ namespace AcademicAppoinment.Migrations
             modelBuilder.Entity("AcademicAppoinment.Models.Student", b =>
                 {
                     b.Navigation("Appointments");
-
-                    b.Navigation("StudentProgresses");
                 });
 
             modelBuilder.Entity("AcademicAppoinment.Models.User", b =>

@@ -1,10 +1,11 @@
-using AcademicAppoinment.Services.Lecturers;
+using AcademicAppoinment.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicAppoinment.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class LecturersController : ControllerBase
     {
         private readonly ILecturerService _lecturerService;
@@ -15,48 +16,32 @@ namespace AcademicAppoinment.Controllers
         }
 
         [HttpGet]
-        public IActionResult Search([FromQuery] string? name, [FromQuery] string? department, [FromQuery] string? specialization, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        public async Task<IActionResult> GetLecturers()
         {
-            var lecturers = _lecturerService.SearchLecturers(name, department, specialization, page, pageSize);
-            var result = lecturers.Select(l => new {
-                l.LecturerId,
-                l.LecturerCode,
-                FullName = l.User?.FullName,
-                l.Department,
-                l.Specialization,
-                l.OfficeLocation
-            });
+            var result = await _lecturerService.GetLecturersAsync();
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        [HttpGet("me")]
+        [Authorize(Roles = "Lecturer")]
+        public async Task<IActionResult> GetMyProfile()
         {
-            var lecturer = _lecturerService.GetLecturerById(id);
-            if (lecturer == null) return NotFound();
-            return Ok(new {
-                lecturer.LecturerId,
-                lecturer.LecturerCode,
-                FullName = lecturer.User?.FullName,
-                Email = lecturer.User?.EmailAddress,
-                lecturer.Department,
-                lecturer.Specialization,
-                lecturer.ConsultationDescription,
-                lecturer.OfficeLocation
-            });
+            var result = await _lecturerService.GetMyProfileAsync(User);
+            return Ok(result);
         }
 
-        [HttpGet("{id}/slots")]
-        public IActionResult GetSlots(int id)
+        [HttpPut("me")]
+        [Authorize(Roles = "Lecturer")]
+        public async Task<IActionResult> UpdateMyProfile([FromBody] AcademicAppoinment.DTOs.Lecturers.UpdateLecturerProfileDto dto)
         {
-            var slots = _lecturerService.GetFutureAvailableSlots(id);
-            var result = slots.Select(s => new {
-                s.AvailabilitySlotId,
-                s.StartTime,
-                s.EndTime,
-                s.MeetingType,
-                s.LocationOrLink
-            });
+            var result = await _lecturerService.UpdateMyProfileAsync(dto, User);
+            return Ok(result);
+        }
+
+        [HttpGet("{lecturerId}")]
+        public async Task<IActionResult> GetLecturerById(int lecturerId)
+        {
+            var result = await _lecturerService.GetLecturerByIdAsync(lecturerId);
             return Ok(result);
         }
     }

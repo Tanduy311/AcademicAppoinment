@@ -1,130 +1,55 @@
-using System;
-using System.Linq;
-using AcademicAppoinment.Models;
+using AcademicAppoinment.DTOs.Admin;
+using AcademicAppoinment.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AcademicAppoinment.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        public AdminController(AppDbContext context)
+        private readonly IAdminService _adminService;
+
+        public AdminController(IAdminService adminService)
         {
-            _context = context;
+            _adminService = adminService;
         }
 
-        // Temporary endpoint to seed minimal test data for local development.
-        // WARNING: This is intended for local/dev only and should be removed after testing.
-        [HttpPost("seed-test-data")]
-        public IActionResult SeedTestData()
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers()
         {
-            // Ensure roles exist
-            var lecturerRole = _context.Roles.FirstOrDefault(r => r.RoleName == "Lecturer");
-            var studentRole = _context.Roles.FirstOrDefault(r => r.RoleName == "Student");
+            var result = await _adminService.GetUsersAsync();
+            return Ok(result);
+        }
 
-            // minimal guard
-            if (lecturerRole == null || studentRole == null)
-            {
-                return StatusCode(500, "Required roles not present in DB.");
-            }
+        [HttpGet("users/{userId}")]
+        public async Task<IActionResult> GetUserById(int userId)
+        {
+            var result = await _adminService.GetUserByIdAsync(userId);
+            return Ok(result);
+        }
 
-            // Create lecturer user if missing
-            var lecEmail = "lecturer.test@local";
-            var lecUser = _context.Users.FirstOrDefault(u => u.EmailAddress == lecEmail);
-            if (lecUser == null)
-            {
-                lecUser = new User
-                {
-                    AccountName = "lecturer.test",
-                    PasswordHash = "testhash",
-                    EmailAddress = lecEmail,
-                    FullName = "Lecturer Test",
-                    RoleId = lecturerRole.RoleId,
-                    IsActive = true,
-                    CreatedAt = DateTime.UtcNow
-                };
-                _context.Users.Add(lecUser);
-                _context.SaveChanges();
-            }
+        [HttpGet("roles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            var result = await _adminService.GetRolesAsync();
+            return Ok(result);
+        }
 
-            // Create lecturer entry if missing
-            var lecCode = "L-TEST-2";
-            var lecturer = _context.Lecturers.FirstOrDefault(l => l.UserId == lecUser.UserId);
-            if (lecturer == null)
-            {
-                lecturer = new Lecturer
-                {
-                    UserId = lecUser.UserId,
-                    LecturerCode = lecCode,
-                    Department = "Testing",
-                    Specialization = "Integration",
-                    OfficeLocation = "Room Test",
-                    ConsultationDescription = "Seeded test lecturer"
-                };
-                _context.Lecturers.Add(lecturer);
-                _context.SaveChanges();
-            }
+        [HttpPut("users/{userId}/status")]
+        public async Task<IActionResult> UpdateStatus(int userId, [FromBody] UpdateUserStatusDto dto)
+        {
+            await _adminService.SetUserActiveAsync(userId, dto.IsActive, User);
+            return Ok(new { message = "Cập nhật trạng thái tài khoản thành công." });
+        }
 
-            // Create availability slot
-            var slotExists = _context.AvailabilitySlots.Any(s => s.LecturerId == lecturer.LecturerId && s.StartTime > DateTime.UtcNow);
-            if (!slotExists)
-            {
-                var slot = new AvailabilitySlot
-                {
-                    LecturerId = lecturer.LecturerId,
-                    StartTime = DateTime.UtcNow.AddDays(1).AddHours(9),
-                    EndTime = DateTime.UtcNow.AddDays(1).AddHours(10),
-                    MeetingType = "InPerson",
-                    LocationOrLink = "Room Test",
-                    IsAvailable = true,
-                    CreatedAt = DateTime.UtcNow
-                };
-                _context.AvailabilitySlots.Add(slot);
-                _context.SaveChanges();
-            }
-
-            // Create a test student
-            var stuEmail = "student.test@local";
-            var stuUser = _context.Users.FirstOrDefault(u => u.EmailAddress == stuEmail);
-            if (stuUser == null)
-            {
-                stuUser = new User
-                {
-                    AccountName = "student.test",
-                    PasswordHash = "testhash",
-                    EmailAddress = stuEmail,
-                    FullName = "Student Test",
-                    RoleId = studentRole.RoleId,
-                    IsActive = true,
-                    CreatedAt = DateTime.UtcNow
-                };
-                _context.Users.Add(stuUser);
-                _context.SaveChanges();
-            }
-
-            var student = _context.Students.FirstOrDefault(s => s.UserId == stuUser.UserId);
-            if (student == null)
-            {
-                student = new Student
-                {
-                    UserId = stuUser.UserId,
-                    StudentCode = "S-TEST-1",
-                    Major = "Testing",
-                    ClassName = "TST101",
-                    AcademicYear = "2026"
-                };
-                _context.Students.Add(student);
-                _context.SaveChanges();
-            }
-
-            return Ok(new
-            {
-                message = "Seeded test lecturer, slot and student",
-                lecturerId = lecturer.LecturerId,
-                studentId = student.StudentId
-            });
+        [HttpPut("users/{userId}/role")]
+        public async Task<IActionResult> UpdateRole(int userId, [FromBody] UpdateUserRoleDto dto)
+        {
+            await _adminService.SetUserRoleAsync(userId, dto.RoleId, User);
+            return Ok(new { message = "Cập nhật role thành công." });
         }
     }
 }

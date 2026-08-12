@@ -27,3 +27,21 @@ Vào GitHub → **Pull Requests** → **New Pull Request** → chọn branch c�
 | Database | `db/them-bang-orders` |
 
 ---
+
+## Frontend
+
+Frontend nằm trong thư mục `frontend/`.
+
+Chạy local:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Nếu backend chạy ở port khác, set thêm file `.env`:
+
+```bash
+VITE_API_BASE_URL=http://localhost:xxxx
+```

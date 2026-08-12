@@ -17,12 +17,18 @@ namespace AcademicAppoinment.Models
         [MaxLength(20)]
         public string? PhoneNumber { get; set; }
 
+        [MaxLength(500)]
+        public string? AvatarUrl { get; set; }
+
+        [MaxLength(200)]
+        public string? AvatarBlobName { get; set; }
+
         [EmailAddress]
         [Required]
-        public string EmailAddress { get; set; }
+        public required string EmailAddress { get; set; }
 
         [MaxLength(50)]
-        public string? FullName {  get; set; }
+        public required string FullName { get; set; }
 
         // Khóa ngoại tới Role
         public int RoleId { get; set; }

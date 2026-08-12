@@ -1,4 +1,3 @@
-﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AcademicAppoinment.Models
@@ -18,7 +17,6 @@ namespace AcademicAppoinment.Models
         public DbSet<AvailabilitySlot> AvailabilitySlots { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Notification> Notifications { get; set; }
-        public DbSet<StudentProgress> StudentProgresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -86,12 +84,17 @@ namespace AcademicAppoinment.Models
                 .HasForeignKey(a => a.LecturerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // AvailabilitySlot 1 - 0..1 Appointment
+            // AvailabilitySlot 1 - N Appointment
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.AvailabilitySlot)
-                .WithOne(s => s.Appointment)
-                .HasForeignKey<Appointment>(a => a.AvailabilitySlotId)
+                .WithMany(s => s.Appointments)
+                .HasForeignKey(a => a.AvailabilitySlotId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Appointment>()
+                .HasIndex(a => a.AvailabilitySlotId)
+                .IsUnique()
+                .HasFilter("[Status] IN ('Pending', 'Confirmed')");
 
             // User 1 - N Notification
             modelBuilder.Entity<Notification>()
@@ -125,14 +128,6 @@ namespace AcademicAppoinment.Models
                     RoleName = "Lecturer"
                 }
             );
-
-            // StudentProgress 1 - N Student (configure delete behavior to match project's convention: Restrict/NoAction)
-            modelBuilder.Entity<StudentProgress>()
-                .HasOne(sp => sp.Student)
-                .WithMany(s => s.StudentProgresses)
-                .HasForeignKey(sp => sp.StudentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
         }
     }
 }

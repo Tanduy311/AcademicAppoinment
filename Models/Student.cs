@@ -10,8 +10,9 @@ namespace AcademicAppoinment.Models
         // Khóa ngoại đến User
         public int UserId { get; set; }
 
+        [Required]
         [MaxLength(50)]
-        public string? StudentCode { get; set; }
+        public string StudentCode { get; set; } = null!;
 
 
         [MaxLength(150)]
@@ -31,9 +32,6 @@ namespace AcademicAppoinment.Models
         [JsonIgnore]
         public ICollection<Appointment> Appointments { get; set; }
             = new List<Appointment>();
-
-        [JsonIgnore]
-        public ICollection<StudentProgress> StudentProgresses { get; set; } = new List<StudentProgress>();
 
         //[JsonIgnore]
         //public ICollection<Notification> Notifications { get; set; }

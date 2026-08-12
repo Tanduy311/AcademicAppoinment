@@ -1,0 +1,99 @@
+name: Auto Deploy Backend & Database to MonsterASP
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'frontend/**'
+      - 'README.md'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore AcademicAppoinment.csproj
+
+      - name: Install EF Core CLI
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Test Database TCP Connection
+        env:
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          if [ -z "$DB_CONNECTION_STRING" ]; then
+            echo "DB_CONNECTION_STRING secret is empty or missing."
+            exit 1
+          fi
+
+          db_server="$(printf '%s' "$DB_CONNECTION_STRING" | tr ';' '\n' | awk -F= 'tolower($1) == "server" || tolower($1) == "data source" { print $2; exit }')"
+          db_server="${db_server#tcp:}"
+          db_port="1433"
+
+          if printf '%s' "$db_server" | grep -q ','; then
+            db_port="${db_server##*,}"
+            db_server="${db_server%%,*}"
+          fi
+
+          if [ -z "$db_server" ]; then
+            echo "Could not parse SQL Server host from DB_CONNECTION_STRING."
+            exit 1
+          fi
+
+          echo "Testing TCP access to SQL Server host on port $db_port..."
+          timeout 15 bash -c "cat < /dev/null > /dev/tcp/$db_server/$db_port" || {
+            echo "Cannot reach SQL Server TCP port. Check MonsterASP remote access, firewall, server host, and port."
+            exit 1
+          }
+
+      - name: Apply Database Migrations
+        env:
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          if [ -z "$DB_CONNECTION_STRING" ]; then
+            echo "DB_CONNECTION_STRING secret is empty or missing."
+            exit 1
+          fi
+
+          dotnet ef database update \
+            --project AcademicAppoinment.csproj \
+            --startup-project AcademicAppoinment.csproj \
+            --connection "$DB_CONNECTION_STRING"
+
+      - name: Publish .NET app
+        run: dotnet publish AcademicAppoinment.csproj -c Release -o ./publish
+
+      - name: Configure published appsettings
+        env:
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          if [ -z "$DB_CONNECTION_STRING" ]; then
+            echo "DB_CONNECTION_STRING secret is empty or missing."
+            exit 1
+          fi
+
+          tmp_file="$(mktemp)"
+          jq --arg db "$DB_CONNECTION_STRING" \
+            '.ConnectionStrings.DBConnection = $db' \
+            ./publish/appsettings.json > "$tmp_file"
+          mv "$tmp_file" ./publish/appsettings.json
+
+      - name: Deploy to MonsterASP via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./publish/
+          server-dir: /wwwroot/
+          dangerous-clean-slate: false

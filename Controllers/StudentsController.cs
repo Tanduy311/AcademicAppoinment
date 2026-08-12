@@ -1,62 +1,51 @@
-using System;
-using System.IO;
-using System.Linq;
-using AcademicAppoinment.Models;
+using AcademicAppoinment.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+using AcademicAppoinment.DTOs.Students;
 
 namespace AcademicAppoinment.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
     public class StudentsController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _env;
+        private readonly IStudentService _studentService;
 
-        public StudentsController(AppDbContext context, IWebHostEnvironment env)
+        public StudentsController(IStudentService studentService)
         {
-            _context = context;
-            _env = env;
+            _studentService = studentService;
         }
 
-        [HttpPost("upload-progress")]
-        [Consumes("multipart/form-data")]
-        public IActionResult UploadProgress([FromForm] AcademicAppoinment.DTOs.UploadProgressRequest req)
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetStudents()
         {
-            var file = req?.File;
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdClaim, out var userId)) return BadRequest("Missing or invalid user claim");
+            var result = await _studentService.GetStudentsAsync();
+            return Ok(result);
+        }
 
-            var student = _context.Students.FirstOrDefault(s => s.UserId == userId);
-            if (student == null) return BadRequest("Student not found");
+        [HttpGet("me")]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var result = await _studentService.GetMyProfileAsync(User);
+            return Ok(result);
+        }
 
-            if (file == null || file.Length == 0) return BadRequest("No file uploaded");
+        [HttpPut("me")]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> UpdateMyProfile([FromBody] UpdateStudentProfileDto dto)
+        {
+            var result = await _studentService.UpdateMyProfileAsync(dto, User);
+            return Ok(result);
+        }
 
-            var uploads = Path.Combine(_env.ContentRootPath, "Uploads", "StudentProgress");
-            Directory.CreateDirectory(uploads);
-
-            var fileName = Path.GetFileName(file.FileName);
-            var savePath = Path.Combine(uploads, $"{Guid.NewGuid()}_{fileName}");
-
-            using (var stream = System.IO.File.Create(savePath))
-            {
-                file.CopyTo(stream);
-            }
-
-            var record = new StudentProgress
-            {
-                StudentId = student.StudentId,
-                FileName = fileName,
-                FilePath = savePath,
-                ContentType = file.ContentType,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.StudentProgresses.Add(record);
-            _context.SaveChanges();
-
-            return Ok(new { message = "File uploaded", id = record.StudentProgressId });
+        [HttpGet("{studentId}")]
+        public async Task<IActionResult> GetStudentById(int studentId)
+        {
+            var result = await _studentService.GetStudentByIdAsync(studentId, User);
+            return Ok(result);
         }
     }
 }
